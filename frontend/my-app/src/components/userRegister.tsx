@@ -11,7 +11,7 @@ import {
   Paper,
   TextField,
   ThemeProvider,
-  Typography
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
@@ -37,7 +37,7 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 const UserRegister = () => {
-  const navigate = useNavigate()  
+  const navigate = useNavigate();
 
   const [passenger_name, setPassengerName] = useState<string>("");
   const [passenger_email, setPassengerEmail] = useState<string>("");
@@ -62,7 +62,7 @@ const UserRegister = () => {
     console.log(result);
     if (result) {
       alert("new user added");
-      navigate("/LOGIN")
+      navigate("/LOGIN");
     } else {
       alert("try again!!");
     }

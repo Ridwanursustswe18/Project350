@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./components/login";
 import Header from "./components/nav";
+import Profile from "./components/profile";
 import UserRegister from "./components/userRegister";
 import "./index";
 
@@ -13,6 +14,7 @@ function App() {
           <Route path="/HOME"></Route>
           <Route path="/REGISTER" element={<UserRegister />}></Route>
           <Route path="/LOGIN" element={<Login />}></Route>
+          <Route path="/PROFILE/:ID" element={<Profile />}></Route>
           <Route path="/TRAIN_INFORMATION"></Route>
         </Routes>
       </BrowserRouter>

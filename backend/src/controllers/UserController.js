@@ -39,7 +39,9 @@ exports.updateProfile = async(req,res)=>{
     return res.status(500).json({message:"invalid entry"})
   }
   }
-
+else{
+  return res.status(401).json({message:"unrecognized user"})
+}
    
 
  

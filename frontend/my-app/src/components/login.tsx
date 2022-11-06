@@ -1,4 +1,3 @@
-import { yupResolver } from "@hookform/resolvers/yup";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -15,9 +14,7 @@ import Typography from "@mui/material/Typography";
 import axios from "axios";
 import * as React from "react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import * as Yup from "yup";
 
 function Copyright(props: any) {
   return (
@@ -41,30 +38,28 @@ const theme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [passenger_mobile_no, setPassengerMobileNo] =
     React.useState<string>("");
   const [passenger_password, setPassengerPassword] = useState<string>("");
   const signin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = axios.post("http://localhost:3000/api/login", {
+    const result = await axios.post("http://localhost:3000/api/login", {
       passenger_mobile_no,
       passenger_password,
     });
-    if (await result) {
+    if (result.data.token) {
+      localStorage.setItem("ID", result.data.ID);
+      localStorage.setItem("token", result.data.token);
+    }
+    if (result) {
       alert("logged in successfully");
       navigate("/HOME");
     } else {
       alert("incorrect credentials");
     }
   };
-  const validationSchema = Yup.object().shape({
-    passenger_mobile_no: Yup.string().required("mobile number is required"),
-    passenger_password: Yup.string().required("password is required"),
-  });
-  const {
-    register,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(validationSchema) });
+
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
@@ -109,10 +104,8 @@ export default function Login() {
                 fullWidth
                 id="mobile-no"
                 label="Mobile Number"
-                name="mobile-no"
                 autoComplete="current-mobile-no"
                 autoFocus
-                helperText={"Incorrect entry"}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                   setPassengerMobileNo(event.target.value);
                 }}
@@ -122,7 +115,6 @@ export default function Login() {
                 margin="normal"
                 required
                 fullWidth
-                name="password"
                 label="Password"
                 type="password"
                 id="password"

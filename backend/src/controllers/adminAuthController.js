@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const database  = require("../config/db.config")
 const admin = require("../entities/admin")
-const passenger = require("../entities/passenger")
+
 exports.register = async(req,res)=>{
     const {admin_name,admin_email,admin_password} = req.body
     const salt  =  await bcrypt.genSalt();
