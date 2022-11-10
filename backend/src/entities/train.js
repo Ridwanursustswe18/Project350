@@ -29,6 +29,6 @@ const train = database.define(
         freezeTableName: true
     }
 );
- train.sync()
+train.sync()
 module.exports = train
 

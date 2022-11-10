@@ -1,7 +1,9 @@
 const { DataTypes, NUMBER } = require("sequelize");
 const sequeilze = require("sequelize")
 const bogey = require("../entities/bogey")
-const database = require("../config/db.config")
+const database = require("../config/db.config");
+const train_class = require("./class");
+
 const seat = database.define(
     "seat",{
         ID:{
@@ -15,10 +17,7 @@ const seat = database.define(
             allowNull:false
           },
          
-          class:{
-            type:DataTypes.STRING,
-            allowNull:false
-          }
+         
        
     },
     {
@@ -26,6 +25,7 @@ const seat = database.define(
     }
 );
 bogey.hasMany(seat)
- seat.sync()
+
+seat.sync()
 module.exports = seat
 

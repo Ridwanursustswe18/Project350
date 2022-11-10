@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken")
 const database  = require("../config/db.config")
 const admin = require("../entities/admin")
 
+
+
 exports.register = async(req,res)=>{
     const {admin_name,admin_email,admin_password} = req.body
     const salt  =  await bcrypt.genSalt();

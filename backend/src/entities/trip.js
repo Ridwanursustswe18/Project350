@@ -10,7 +10,7 @@ const trip = database.define(
             type:DataTypes.INTEGER,
         },
         trip_date:{
-            type:DataTypes.DATE,
+            type:DataTypes.DATEONLY,
             allowNull:false
         },
         destination:{
@@ -30,20 +30,17 @@ const trip = database.define(
             type:DataTypes.TIME,
             allowNull:false
           },
-          Fare:{
-            type:DataTypes.INTEGER,
-            allowNull:false
-          },
+         
           seat_available_online:{
             type:DataTypes.INTEGER
           },
           seat_available_counter:{
             type:DataTypes.INTEGER
           },
-          booked_seats:{
-            type:DataTypes.STRING,
-            allowNull:false
-          }          
+          total_time:{
+            type:DataTypes.STRING
+          }
+                
 
        
        
@@ -53,6 +50,7 @@ const trip = database.define(
     }
 );
 train.hasOne(trip)
- trip.sync()
+trip.belongsTo(train)
+trip.sync()
 module.exports = trip
 

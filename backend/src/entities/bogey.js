@@ -1,7 +1,8 @@
 const { DataTypes, NUMBER } = require("sequelize");
 const sequeilze = require("sequelize")
 const train = require("../entities/train")
-const database = require("../config/db.config")
+const database = require("../config/db.config");
+
 const bogey = database.define(
     "bogey",{
         ID:{
@@ -26,6 +27,7 @@ const bogey = database.define(
     }
 );
 train.hasMany(bogey)
+
  bogey.sync()
 module.exports = bogey
 
