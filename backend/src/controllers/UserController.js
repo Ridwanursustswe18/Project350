@@ -1,7 +1,7 @@
 const { json } = require("sequelize")
 
 const database  = require("../config/db.config")
-const passenger = require("../entities/passenger")
+
 const bcrypt = require("bcrypt")
 
 exports.updateProfile = async(req,res)=>{
@@ -16,47 +16,52 @@ exports.updateProfile = async(req,res)=>{
     
     
     
-    const newUser = {
+    const newPassenger = {
       passenger_email,passenger_name,passenger_mobile_no,passenger_address,passenger_password:hashedPassword,passenger_identification,passenger_post_code,profile_picture
   }
  
-  const validUser = await passenger.findOne({where:{ID}})
-  
-  if(validUser && validUser.ID === user.ID){
-    
-    const update = await passenger.update(
-      newUser,
-      {
-        where:{ID:ID}
+  let query1 = "SELECT * FROM `passenger` WHERE ID = ?"
+  database.query(query1,[ID],(err,results)=>{
+    if(results && results[0].ID === user.ID ){
+      const query2 = "UPDATE `passenger` SET `passenger_email`=?,`passenger_name`=?,`passenger_mobile_no`=?,`passenger_address`=?,`passenger_password`=?,`passenger_identification`=?,`passenger_post_code`=?,`profile_picture`=? WHERE ID = ?"
+      database.query(query2,[newPassenger.passenger_email,newPassenger.passenger_name,newPassenger.passenger_mobile_no,newPassenger.passenger_address,newPassenger.passenger_password,newPassenger.passenger_identification,newPassenger.passenger_post_code,newPassenger.profile_picture,ID],(err,results)=>{
+        if(!err){
+          if(results.affectedRows === 0){
+              return res.status(404).json({message:"User does not exist"})
+          }
+        return res.status(200).json({message:"User updated successfully"})
       }
-      )
-    
-  
-  if(update){
-    return res.status(200).json({message:"User updated successfully"})
+      else{
+        return res.status(500).json(err)
+      }
+    })
   }
   else{
-    return res.status(500).json({message:"invalid entry"})
+    return res.status(400).json(err)
   }
-  }
-else{
-  return res.status(401).json({message:"unrecognized user"})
-}
-   
-
+      })
+    }
  
-}
 exports.getSingleUser = async(req,res)=>{
   const ID = req.params.ID
   const user = req.user
-  const validUser = await passenger.findOne({where:{ID}})
-  if(validUser && validUser.ID === user.ID){
-   const profile = await passenger.findOne({where:{ID}})
-   if(profile){
-    res.status(200).send(profile)
-   }
+  let query1 = "SELECT * FROM `passenger` WHERE ID = ?"
+  database.query(query1,[ID],(err,results)=>{
+   
+    if(results && results[0].ID === user.ID ){
+      let query2 = "SELECT `ID`, `role`, `passenger_email`, `passenger_name`, `passenger_mobile_no`, `passenger_address`, `passenger_password`, `passenger_identification`, `passenger_post_code`, `profile_picture` FROM `passenger` WHERE ID = ?" 
+      database.query(query2,[ID],(err,results)=>{
+        if(!err){
+          return res.status(200).json(results)
+        }
+        else{
+          return res.status(500).json(err)
+        }
+      })
+
   }
   else{
-    return res.status(401).json({message:"unrecognized user"})
+    return res.status(401).json({message:"not recognized"})
   }
+})
 }

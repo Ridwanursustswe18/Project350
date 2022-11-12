@@ -1,47 +1,37 @@
-const { json } = require("sequelize")
+
 const database  = require("../config/db.config")
-const bogey = require("../entities/bogey")
-const seat_class = require("../entities/class")
-const seat = require("../entities/seat")
-const seat_status = require("../entities/seatStatus")
-const train = require("../entities/train")
-const trip = require("../entities/trip")
+
  exports.searchTrains = async(req,res)=>{
-const{source,destination,trip_date,train_class} = req.query
-const search = await trip.findAll({
-    where:{
-        source,
-        destination,
-        trip_date,
-        train_class
+const{source,destination,trip_date} = req.query
+let query = "SELECT * FROM trip,train,seat_class WHERE trip.trainID = train.ID AND train.ID = seat_class.trainID AND trip.source = ? AND trip.destination = ? and trip.trip_date=?  "
+database.query(query,[source,destination,trip_date],(err,results)=>{
+    if(!err){
+        return res.status(200).json(results)
     }
-    ,include:[{
-        model:train,
-        include:[{model:seat_class,required:true}],
-        required:true
-    }]
-   
+    else{
+        return res.status(401).json(err)
+    }
 })
-if(search){
-    return res.status(200).json(search)
-
-}
-else{
-    return res.status(401).json({message:"query unsuccessfull"})
-}
-
 }
 exports.showSeats = async(req,res)=>{
-const{bogey_name,tripID} = req.query
-const showSeats = await bogey.findAll({
+const ID = req.params.ID
+const showSeats = await seat_class.findAll({
     where:{
-        bogey_name,tripID
+        ID
     },
+   include:[{
+    model:bogey,
+    required:true,
     include:[{
         model:seat,
-        include:[{model:seat_status}],
-        required:true
+        required:true,
+        include:[{
+            model:seat_status,
+            required:true
+        }]
     }]
+   }]
+    
 })
 if(showSeats){
     return res.status(200).json(showSeats)

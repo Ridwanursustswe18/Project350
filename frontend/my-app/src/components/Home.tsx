@@ -1,108 +1,145 @@
 import { Button, Grid } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import dayjs, { Dayjs } from "dayjs";
-import React, { createContext, useState } from "react";
-import { Link } from "react-router-dom";
-
-const UserContext = createContext<any | null>(null);
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const [source, setSource] = useState<string>("");
-  const [destination, setDestination] = useState<string>("");
-  const [date, setDate] = React.useState<Dayjs | null>(dayjs("2022-11-10"));
-  const [trainClass, setTrainClass] = useState<string>("");
+  const [source, setSource] = useState<string | null>(null);
+  const [destination, setDestination] = useState<string | null>(null);
+  const [date, setDate] = React.useState<any | null>(null);
+  const [trainClass, setTrainClass] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  const dateChange = (newValue: Dayjs | null) => {
-    setDate(newValue);
+  const handleSearch = () => {
+    navigate("/Train_Schedules", {
+      state: {
+        source: source,
+        destination: destination,
+        date: date,
+        trainClass: trainClass,
+      },
+
+      replace: true,
+    });
   };
   return (
-    <UserContext.Provider
-      value={{
-        source: [source, setSource],
-        destination: [destination, setDestination],
-        date: [date, setDate],
-        trainClass: [trainClass, setTrainClass],
-      }}
+    <Grid
+      marginTop={"7em"}
+      container
+      rowSpacing={3}
+      columnSpacing={{ xs: 1, sm: 2, md: 2 }}
+      padding={"0em 2em"}
     >
-      <Grid
-        marginTop={"7em"}
-        container
-        rowSpacing={3}
-        columnSpacing={{ xs: 1, sm: 2, md: 2 }}
-        padding={"0em 2em"}
-      >
-        <Grid item xs={4}>
-          <Autocomplete
-            id="From Station"
-            freeSolo
-            onChange={(event: any) => {
-              setSource(event.target.value);
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label="From Station" />
-            )}
-            value={source}
-            options={[]}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <Autocomplete
-            id="To Station"
-            freeSolo
-            onChange={(event: any) => {
-              setDestination(event.target.value);
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label="To Station" />
-            )}
-            value={destination}
-            options={[]}
-          />
-        </Grid>
-        <Grid item xs={5} width={"100ch"}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="pick a date"
-              inputFormat="YYYY/MM/DD"
-              value={date}
-              onChange={dateChange}
-              renderInput={(params) => <TextField {...params} />}
+      <Grid item xs={4}>
+        <Autocomplete
+          options={Locations.map((option) => option.city)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="from station"
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+              }}
             />
-          </LocalizationProvider>
-        </Grid>
-        <Grid item xs={5}>
-          <Autocomplete
-            disablePortal
-            id="combo-box-demo"
-            onChange={(event: any) => {
-              setTrainClass(event.target.value);
-            }}
-            options={[]}
-            sx={{ width: 300 }}
-            renderInput={(params) => (
-              <TextField {...params} label="choose a class" />
-            )}
-            value={trainClass}
-          />
-        </Grid>
-        <Grid item xs={5}>
-          <Button
-            sx={{ padding: "0.75em 16em" }}
-            size="large"
-            variant="contained"
-            component={Link}
-            to={"/Train_Schedules"}
-          >
-            Search Trains
-          </Button>
-        </Grid>
+          )}
+          value={source}
+          onChange={(event: any, newValue: string | null) => {
+            setSource(newValue);
+          }}
+        />
       </Grid>
-    </UserContext.Provider>
+      <Grid item xs={4}>
+        <Autocomplete
+          freeSolo
+          id="free-solo-2-demo"
+          options={Locations.map((option) => option.city)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="to station"
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+              }}
+            />
+          )}
+          onChange={(event: any, newValue: string | null) => {
+            setDestination(newValue);
+          }}
+          value={destination}
+        />
+      </Grid>
+      <Grid item xs={5} width={"100ch"}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="pick a date"
+            inputFormat="YYYY-MM-DD"
+            value={date}
+            onChange={(newValue) => {
+              console.log(newValue);
+              console.log(typeof newValue);
+              setDate(newValue?.$d);
+            }}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </LocalizationProvider>
+      </Grid>
+      <Grid item xs={5}>
+        <Autocomplete
+          freeSolo
+          id="free-solo-2-demo"
+          options={Class.map((option) => option.trainClass)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="select a class"
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+              }}
+            />
+          )}
+          onChange={(event: any, newValue: string | null) => {
+            setTrainClass(newValue);
+          }}
+          value={trainClass}
+        />
+      </Grid>
+      <Grid item xs={5}>
+        <Button
+          sx={{ padding: "0.75em 16em" }}
+          size="large"
+          variant="contained"
+          onClick={() => handleSearch()}
+        >
+          Search Trains
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 
-export { UserContext, Home };
+export { Home };
+const Locations = [
+  { city: "Dhaka" },
+  { city: "Chattogram" },
+  { city: "Khulna" },
+
+  { city: "Barishal" },
+
+  { city: "Sylhet" },
+  { city: "Mymensing" },
+
+  { city: "Faridpur" },
+  { city: "Kulaura" },
+  { city: "Kumilla" },
+];
+const Class = [
+  { trainClass: "AC_B" },
+  { trainClass: "Snigdha" },
+  { trainClass: "Shovon" },
+];

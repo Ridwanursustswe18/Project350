@@ -4,7 +4,7 @@ const imageMiddleWare = require("../middleware/imageMiddleware")
 const userRole = require("../middleware/authorizeRole")
 const userRouter = require("../controllers/UserController")
 const router = express.Router()
-const passenger = require("../entities/passenger")
+
 
 router.patch("/update/:ID",varification.verifyToken,imageMiddleWare.image,userRouter.updateProfile)
 router.get("/getProfile/:ID",varification.verifyToken,userRouter.getSingleUser)
