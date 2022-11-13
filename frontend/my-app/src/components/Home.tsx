@@ -139,7 +139,7 @@ const Locations = [
   { city: "Kumilla" },
 ];
 const Class = [
-  { trainClass: "AC_B" },
-  { trainClass: "Snigdha" },
+  { trainClass: "AC" },
+  { trainClass: "Shovon Chair" },
   { trainClass: "Shovon" },
 ];

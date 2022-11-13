@@ -20,10 +20,10 @@ exports.updateProfile = async(req,res)=>{
       passenger_email,passenger_name,passenger_mobile_no,passenger_address,passenger_password:hashedPassword,passenger_identification,passenger_post_code,profile_picture
   }
  
-  let query1 = "SELECT * FROM `passenger` WHERE ID = ?"
+  let query1 = "SELECT * FROM `passenger` WHERE passenger_id = ?"
   database.query(query1,[ID],(err,results)=>{
-    if(results && results[0].ID === user.ID ){
-      const query2 = "UPDATE `passenger` SET `passenger_email`=?,`passenger_name`=?,`passenger_mobile_no`=?,`passenger_address`=?,`passenger_password`=?,`passenger_identification`=?,`passenger_post_code`=?,`profile_picture`=? WHERE ID = ?"
+    if(results && results[0].passenger_id === user.ID ){
+      const query2 = "UPDATE `passenger` SET `passenger_email`=?,`passenger_name`=?,`passenger_mobile_no`=?,`passenger_address`=?,`passenger_password`=?,`passenger_identification`=?,`passenger_post_code`=?,`profile_picture`=? WHERE passenger_id = ?"
       database.query(query2,[newPassenger.passenger_email,newPassenger.passenger_name,newPassenger.passenger_mobile_no,newPassenger.passenger_address,newPassenger.passenger_password,newPassenger.passenger_identification,newPassenger.passenger_post_code,newPassenger.profile_picture,ID],(err,results)=>{
         if(!err){
           if(results.affectedRows === 0){
@@ -45,11 +45,11 @@ exports.updateProfile = async(req,res)=>{
 exports.getSingleUser = async(req,res)=>{
   const ID = req.params.ID
   const user = req.user
-  let query1 = "SELECT * FROM `passenger` WHERE ID = ?"
+  let query1 = "SELECT * FROM `passenger` WHERE passenger_id = ?"
   database.query(query1,[ID],(err,results)=>{
    
-    if(results && results[0].ID === user.ID ){
-      let query2 = "SELECT `ID`, `role`, `passenger_email`, `passenger_name`, `passenger_mobile_no`, `passenger_address`, `passenger_password`, `passenger_identification`, `passenger_post_code`, `profile_picture` FROM `passenger` WHERE ID = ?" 
+    if(results && results[0].passenger_id === user.ID ){
+      let query2 = "SELECT `ID`, `role`, `passenger_email`, `passenger_name`, `passenger_mobile_no`, `passenger_address`, `passenger_password`, `passenger_identification`, `passenger_post_code`, `profile_picture` FROM `passenger` WHERE passenger_id = ?" 
       database.query(query2,[ID],(err,results)=>{
         if(!err){
           return res.status(200).json(results)
