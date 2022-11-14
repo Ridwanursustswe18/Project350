@@ -19,13 +19,21 @@ const authRouter = require("./src/routes/authRoute.js")
 const userRouter = require("./src/routes/userRoute.js")
 const adminRouter = require("./src/routes/adminRoute")
 const trainRouter = require("./src/routes/trainRoute")
+const ticketRouter = require("./src/routes/ticketRoute")
+
+
+
+
+
+ app.use("/api",authRouter)
+ app.use("/api",userRouter)
+app.use("/api/admin",adminRouter)
+app.use("/api/train",trainRouter)
+app.use("/api",ticketRouter)
 app.get('/',(req,res)=>{
     res.send("hello")
 })
-app.use("/api",authRouter)
-app.use("/api",userRouter)
-app.use("/api/admin",adminRouter)
-app.use("/api/train",trainRouter)
+
 app.use("/assets/",express.static("/assets/"))
 app.use((req, res, next)=> {
     res.header("Access-Control-Allow-Origin", "*");

@@ -47,9 +47,9 @@ exports.getSingleUser = async(req,res)=>{
   const user = req.user
   let query1 = "SELECT * FROM `passenger` WHERE passenger_id = ?"
   database.query(query1,[ID],(err,results)=>{
-   
+   console.log(results)
     if(results && results[0].passenger_id === user.ID ){
-      let query2 = "SELECT `ID`, `role`, `passenger_email`, `passenger_name`, `passenger_mobile_no`, `passenger_address`, `passenger_password`, `passenger_identification`, `passenger_post_code`, `profile_picture` FROM `passenger` WHERE passenger_id = ?" 
+      let query2 = "SELECT `passenger_id`, `role`, `passenger_email`, `passenger_name`, `passenger_mobile_no`, `passenger_address`, `passenger_password`, `passenger_NID`, `passenger_post_code`, `profile_picture` FROM `passenger` WHERE passenger_id = ?" 
       database.query(query2,[ID],(err,results)=>{
         if(!err){
           return res.status(200).json(results)

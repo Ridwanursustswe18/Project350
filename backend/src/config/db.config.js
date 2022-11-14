@@ -5,7 +5,7 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'railway_system'
+  database: 'railway_system1'
 })
 
 connection.connect()
