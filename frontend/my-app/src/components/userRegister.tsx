@@ -44,19 +44,18 @@ const UserRegister = () => {
   const [passenger_mobile_no, setPassengerMobileNo] = useState<string>("");
   const [passenger_address, setPassengerAddress] = useState<string>("");
   const [passenger_password, setPassengerPassword] = useState<string>("");
-  const [passenger_identification, setPassengerIdentification] =
-    useState<string>("");
+  const [passenger_NID, setPassengerNID] = useState<string>("");
   const [passenger_post_code, setPassengerPostCode] = useState<string>("");
 
   const SignUp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = await axios.post("http://localhost:3000/api/register", {
+    const result = await axios.post("http://localhost:3000/api/auth/register", {
       passenger_email,
       passenger_name,
       passenger_mobile_no,
       passenger_address,
       passenger_password,
-      passenger_identification,
+      passenger_NID,
       passenger_post_code,
     });
     console.log(result);
@@ -189,9 +188,9 @@ const UserRegister = () => {
                     id="Identification"
                     autoComplete="current-Identification"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      setPassengerIdentification(event.target.value);
+                      setPassengerNID(event.target.value);
                     }}
-                    value={passenger_identification}
+                    value={passenger_NID}
                   />
                 </Box>
                 <Box

@@ -14,7 +14,11 @@ import Typography from "@mui/material/Typography";
 import axios from "axios";
 import * as React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  Link as RegisterLink,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 function Copyright(props: any) {
   return (
@@ -38,13 +42,13 @@ const theme = createTheme();
 
 export default function Login() {
   const navigate = useNavigate();
-
+  const prevLocation = useLocation();
   const [passenger_mobile_no, setPassengerMobileNo] =
     React.useState<string>("");
   const [passenger_password, setPassengerPassword] = useState<string>("");
   const signin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const result = await axios.post("http://localhost:3000/api/login", {
+    const result = await axios.post("http://localhost:3000/api/auth/login", {
       passenger_mobile_no,
       passenger_password,
     });
@@ -143,7 +147,11 @@ export default function Login() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  <Link
+                    component={RegisterLink}
+                    to={"/REGISTER"}
+                    variant="body2"
+                  >
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>
