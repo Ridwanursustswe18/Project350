@@ -6,6 +6,7 @@ const app = express()
 const database = require("./src/config/db.config")
 const port = 3000
 
+
 app.use(bodyParser.json())
 app.use(express.urlencoded({extended:true}))
 
