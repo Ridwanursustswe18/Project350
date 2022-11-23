@@ -5,8 +5,6 @@ const cors = require("cors");
 const app = express()
 const database = require("./src/config/db.config")
 const port = 3000
-const stripe = require("stripe")("")
-const uuid = require("uuid/v4")
 
 
 app.use(bodyParser.json())
@@ -23,7 +21,7 @@ const userRouter = require("./src/routes/userRoute.js")
 const adminRouter = require("./src/routes/adminRoute")
 const trainRouter = require("./src/routes/trainRoute")
 const ticketRouter = require("./src/routes/ticketRoute")
-const seatStatusRoute = require("./src/routes/seatStatusRoute")
+const seatStatusRouter = require("./src/routes/seatStatusRoute")
 
 
 
@@ -34,7 +32,8 @@ app.use("/api",userRouter)
 app.use("/api/admin",adminRouter)
 app.use("/api/train",trainRouter)
 app.use("/api",ticketRouter)
-app.use("/api/seatStatus",seatStatusRoute)
+app.use("/api/seatStatus",seatStatusRouter)
+app.use("api/",ticketRouter)
 
 app.get('/',(req,res)=>{
     res.send("hello")
