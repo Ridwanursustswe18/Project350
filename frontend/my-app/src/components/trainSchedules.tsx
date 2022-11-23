@@ -1,10 +1,21 @@
-import { Avatar, Box, Button, Card, Divider, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Divider,
+  MenuItem,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import moment from "moment";
 import { useEffect, useState } from "react";
-
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import authHeader from "../services/auth";
+
 interface tripInfo {
   trip_id: number;
   source: string;
@@ -18,49 +29,80 @@ interface tripInfo {
   train_name: string;
   fare: number;
   class_name: string;
-}
-interface showSeatType {
   bogey_name: string;
+  seat_status: number;
+}
+interface showBogeysType {
+  bogey_name: string;
+}
+interface showseatType {
+  seat_id: number;
   seat_name: string;
+  bogey_name: string;
+  seat_status: number;
 }
 const TrainSchedules = () => {
+  const token = localStorage.getItem("token");
   const { state } = useLocation();
-  const params = useParams();
+  const navigate = useNavigate();
   const source = state.source,
     destination = state.destination,
     date: Date = state.date,
     class_name = state.trainClass;
   const [trips, setTrips] = useState([]);
-  const [seats, setShowSeats] = useState([]);
-  const [trip_id, setTripID] = useState();
+  const [trip_id, setTripID] = useState<number>();
+  const [fare, setFare] = useState<number>(0);
   const [seat_class_id, setClassID] = useState<number>();
-
   const trip_date = moment(date).format();
+  const [bogeys, setShowBogeys] = useState([]);
+  const [bogey, setBogey] = useState<string>("");
+  const [bogey_name, setBogeyName] = useState<string>(bogey);
+  const [seats, setSeats] = useState([]);
+  const [show, setShow] = useState<boolean>(false);
+  console.log(trip_id);
+  const selectedSeats: {
+    seat_id: number;
+    seat_name: string;
+    bogey_name: string;
+  }[] = [];
+
   const showSeats = async () => {
-    console.log(seat_class_id);
     const result = await axios.get(
-      "http://localhost:3000/api/train/showSeats/" + { seat_class_id },
-      { headers: authHeader() }
+      "http://localhost:3000/api/train/showSeats",
+      { params: { bogey_name }, headers: authHeader() }
     );
-    setShowSeats(result.data);
+    setSeats(result.data);
+
     console.log(result.data);
   };
-  const results = async () => {
+  const showBogeys = async () => {
+    console.log(seat_class_id);
+    const result = await axios.get(
+      "http://localhost:3000/api/train/showBogeys",
+      { params: { seat_class_id }, headers: authHeader() }
+    );
+    setShowBogeys(result.data);
+
+    setBogey(result.data[0]["bogey_name"]);
+  };
+  const showTrips = async () => {
     const result = await axios.get("http://localhost:3000/api/train/search", {
       params: { source, destination, trip_date, class_name },
     });
     setTrips(result.data);
-    setTripID(result.data[0]["trip_id"]);
     setClassID(result.data[0]["seat_class_id"]);
+    setFare(result.data[0]["fare"]);
   };
+
   useEffect(() => {
-    results();
+    showTrips();
+    showBogeys();
     showSeats();
   }, []);
 
   return (
     <>
-      <Box margin={"5em 8em"}>
+      <Box margin={"5em 8em"} sx={{ overflowY: "auto" }}>
         <Box display={"flex"}>
           <Typography color={"#154c79"}>{source}</Typography>
           <Typography color={"#154c79"} margin={"0em 0.25em"}>
@@ -76,7 +118,16 @@ const TrainSchedules = () => {
           return (
             <>
               <Card
-                sx={{ margin: "0em 8em", maxWidth: "50%", color: "FAF9F6" }}
+                sx={{
+                  margin: "0em 8em",
+                  maxWidth: "50%",
+                  backgroundcolor: "#FFFDD0",
+                  ":hover": {
+                    boxShadow: 20,
+                  },
+                  borderRadius: 3,
+                  overflowY: "auto",
+                }}
                 variant={"elevation"}
                 elevation={6}
               >
@@ -109,22 +160,185 @@ const TrainSchedules = () => {
                   <Typography>tickets available :-</Typography>
                   <Typography>Counter {trip.seat_available_counter}</Typography>
                   <Typography>Online {trip.seat_available_online}</Typography>
+                  <Button
+                    size="large"
+                    onClick={() => {
+                      setShow(true);
+                      setTripID(trip.trip_id);
+                    }}
+                  >
+                    select this trip
+                  </Button>
                 </Box>
                 <Divider />
-                <Card sx={{ margin: "1em 16em", height: 120, width: 100 }}>
-                  <Typography paddingLeft={"2em"}>{trip.class_name}</Typography>
-                  <Box display={"flex"}>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5rVCgCOyjtMtewSxrwg3pskhj6jFrGqqE51C9RdqdgC4yGhsC6J6uJE3_6CJsr86wZXo&usqp=CAU"
-                    />
-                    <Typography fontSize={"1.5rem"}>{trip.fare}</Typography>
-                  </Box>
-                  <Button variant="outlined" size="small" onClick={showSeats}>
-                    book now
-                  </Button>
-                </Card>
+                {show ? (
+                  <Card
+                    sx={{
+                      height: 120,
+                      width: 100,
+                      margin: "auto",
+                      marginTop: "1em",
+                      marginBottom: "1em",
+                      borderRadius: 2,
+                      ":hover": {
+                        boxShadow: 20,
+                      },
+                      overflowY: "auto",
+                    }}
+                    elevation={6}
+                  >
+                    <Typography paddingLeft={"2em"}>
+                      {trip.class_name}
+                    </Typography>
+                    <Box display={"flex"}>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5rVCgCOyjtMtewSxrwg3pskhj6jFrGqqE51C9RdqdgC4yGhsC6J6uJE3_6CJsr86wZXo&usqp=CAU"
+                      />
+                      <Typography fontSize={"1.5rem"}>{trip.fare}</Typography>
+                    </Box>
+                    {!token ? (
+                      <>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => {
+                            navigate("/LOGIN");
+                          }}
+                        >
+                          book now
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => {
+                          showBogeys();
+                        }}
+                      >
+                        book now
+                      </Button>
+                    )}
+                  </Card>
+                ) : (
+                  <></>
+                )}
               </Card>
+              {bogeys.length > 0 ? (
+                <>
+                  <TextField
+                    id="outlined-select-bogey"
+                    select
+                    label="Select your bogey"
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      setBogeyName(event.target.value);
+                    }}
+                    value={bogey_name}
+                    helperText="Please select your bogey"
+                    sx={{ margin: "1.5em 8em" }}
+                  >
+                    {bogeys.map((bogey: showBogeysType) => (
+                      <MenuItem
+                        key={bogey.bogey_name}
+                        value={bogey.bogey_name}
+                        onClick={showSeats}
+                      >
+                        {bogey.bogey_name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </>
+              ) : (
+                <></>
+              )}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  "& > :not(style)": {
+                    m: 1,
+                    width: 60,
+                    height: 40,
+                    margin: "3em 1em",
+                    overflowY: "auto",
+                  },
+                }}
+              >
+                {seats.length > 0 ? (
+                  seats.map((seat: showseatType, key) => {
+                    return (
+                      <>
+                        {seat.seat_status === 0 ? (
+                          <Tooltip title={seat.seat_name}>
+                            <Paper
+                              elevation={4}
+                              sx={{
+                                cursor: "pointer",
+                                ":hover": {
+                                  boxShadow: 20,
+                                },
+                                backgroundColor: "#4649FF",
+                                color: "white",
+                              }}
+                              onClick={() => {
+                                if (selectedSeats.length < 4) {
+                                  selectedSeats.push({
+                                    seat_id: seat.seat_id,
+                                    seat_name: seat.seat_name,
+                                    bogey_name: seat.bogey_name,
+                                  });
+                                }
+                              }}
+                            >
+                              {seat.bogey_name}-{seat.seat_name}
+                            </Paper>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title={seat.seat_name}>
+                            <Paper
+                              elevation={4}
+                              sx={{
+                                cursor: "not-allowed",
+                                ":hover": {
+                                  boxShadow: 20,
+                                },
+                                backgroundColor: "#FF0000",
+                                color: "white",
+                              }}
+                            >
+                              {seat.bogey_name}-{seat.seat_name}
+                            </Paper>
+                          </Tooltip>
+                        )}
+                      </>
+                    );
+                  })
+                ) : (
+                  <></>
+                )}
+              </Box>
+
+              {seats.length > 0 ? (
+                <Button
+                  sx={{ margin: "0.5em 8em" }}
+                  variant="outlined"
+                  onClick={() => {
+                    navigate("/showSelectedSeats", {
+                      state: {
+                        selectedSeats: selectedSeats,
+                        trip_id: trip_id,
+                        fare: fare,
+                        class_name: class_name,
+                      },
+                    });
+                  }}
+                >
+                  proceed
+                </Button>
+              ) : (
+                <></>
+              )}
             </>
           );
         })

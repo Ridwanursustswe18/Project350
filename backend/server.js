@@ -21,20 +21,19 @@ const userRouter = require("./src/routes/userRoute.js")
 const adminRouter = require("./src/routes/adminRoute")
 const trainRouter = require("./src/routes/trainRoute")
 const ticketRouter = require("./src/routes/ticketRoute")
-const seatStatusRouter = require("./src/routes/seatStatusRoute")
+const paymentRouter = require("./src/routes/paymentRoute")
+const seatStatusRoute = require("./src/routes/seatStatusRoute")
 
 
 
 
-
-app.use("/api",authRouter)
-app.use("/api",userRouter)
+ app.use("/api/auth",authRouter)
+ app.use("/api/user",userRouter)
 app.use("/api/admin",adminRouter)
 app.use("/api/train",trainRouter)
-app.use("/api",ticketRouter)
-app.use("/api/seatStatus",seatStatusRouter)
-app.use("api/",ticketRouter)
-
+app.use("/api/ticket",ticketRouter)
+app.use("/api/payment",paymentRouter)
+app.use("/api/seatStatus",seatStatusRoute)
 app.get('/',(req,res)=>{
     res.send("hello")
 })
