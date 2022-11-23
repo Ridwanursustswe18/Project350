@@ -12,6 +12,11 @@ const Success = () => {
   const selectedSeats: seatType[] = selectedSeatsJSON
     ? JSON.parse(selectedSeatsJSON)
     : [];
+  const trip_id = localStorage.getItem("trip_id");
+  const passenger_id = localStorage.getItem("ID");
+  const total_fare = localStorage.getItem("total_fare");
+  console.log(total_fare);
+
   const changeStatus = async () => {
     for (let i = 0; i < selectedSeats?.length; i++) {
       const seat_id: number = selectedSeats[i].seat_id;
@@ -25,16 +30,35 @@ const Success = () => {
       console.log(result);
     }
   };
+  const createTicket = async () => {
+    const result = await axios.post(
+      "http://localhost:3000/api/ticket/create",
+      {
+        passenger_id: passenger_id,
+        trip_id: trip_id,
+        total_fare: total_fare,
+      },
+      { headers: authHeader() }
+    );
+    console.log(result);
+  };
   return (
     <Box
       margin={"10em 10em"}
       display="flex"
+      flexDirection={"column"}
       justifyContent="center"
       alignItems="center"
     >
       <Typography variant="h2">success</Typography>
-      <Button size="large" onClick={changeStatus}>
-        book
+      <Button
+        size="large"
+        onClick={() => {
+          changeStatus();
+          createTicket();
+        }}
+      >
+        proceed
       </Button>
     </Box>
   );

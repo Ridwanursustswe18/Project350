@@ -32,12 +32,13 @@ const ShowSelectedSeats = () => {
           t.bogey_name === value.bogey_name && t.seat_name === value.seat_name
       )
   );
-  const totalFare = fare * filteredSelectedSeats.length;
+  const totalFare: any = fare * filteredSelectedSeats.length;
   const seats = localStorage.setItem(
     "selectedSeats",
     JSON.stringify(filteredSelectedSeats)
   );
   const tripID = localStorage.setItem("trip_id", trip_id);
+  localStorage.setItem("total_fare", totalFare);
   const handleCheckout = () => {
     axios
       .post(
