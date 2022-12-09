@@ -18,6 +18,8 @@ import authHeader from "../services/auth";
 
 interface tripInfo {
   trip_id: number;
+  seat_class_id: number;
+  bogey_id: number;
   source: string;
   destination: string;
   trip_date: string;
@@ -33,6 +35,7 @@ interface tripInfo {
   seat_status: number;
 }
 interface showBogeysType {
+  bogey_id: number;
   bogey_name: string;
 }
 interface showseatType {
@@ -55,8 +58,9 @@ const TrainSchedules = () => {
   const [seat_class_id, setClassID] = useState<number>();
   const trip_date = moment(date).format();
   const [bogeys, setShowBogeys] = useState([]);
-  const [bogey, setBogey] = useState<string>("");
-  const [bogey_name, setBogeyName] = useState<string>(bogey);
+  const [bogey_name, setBogeyName] = useState<string>("");
+  const [bogey_id, setBogeyID] = useState<number>();
+  // const [bogey_name, setBogeyName] = useState<string>(bogey);
   const [seats, setSeats] = useState([]);
   const [show, setShow] = useState<boolean>(false);
   console.log(trip_id);
@@ -69,7 +73,7 @@ const TrainSchedules = () => {
   const showSeats = async () => {
     const result = await axios.get(
       "http://localhost:3000/api/train/showSeats",
-      { params: { bogey_name }, headers: authHeader() }
+      { params: { bogey_id }, headers: authHeader() }
     );
     setSeats(result.data);
 
@@ -83,14 +87,14 @@ const TrainSchedules = () => {
     );
     setShowBogeys(result.data);
 
-    setBogey(result.data[0]["bogey_name"]);
+    // setBogey(result.data[0]["bogey_name"]);
   };
   const showTrips = async () => {
     const result = await axios.get("http://localhost:3000/api/train/search", {
       params: { source, destination, trip_date, class_name },
     });
     setTrips(result.data);
-    setClassID(result.data[0]["seat_class_id"]);
+    // setClassID(result.data[0]["seat_class_id"]);
     setFare(result.data[0]["fare"]);
   };
 
@@ -99,7 +103,7 @@ const TrainSchedules = () => {
     showBogeys();
     showSeats();
   }, []);
-
+  // console.log(trip_id, seat_class_id, bogey_id);
   return (
     <>
       <Box margin={"5em 8em"} sx={{ overflowY: "auto" }}>
@@ -160,94 +164,91 @@ const TrainSchedules = () => {
                   <Typography>tickets available :-</Typography>
                   <Typography>Counter {trip.seat_available_counter}</Typography>
                   <Typography>Online {trip.seat_available_online}</Typography>
-                  <Button
-                    size="large"
-                    onClick={() => {
-                      setShow(true);
-                      setTripID(trip.trip_id);
-                    }}
-                  >
-                    select this trip
-                  </Button>
                 </Box>
                 <Divider />
-                {show ? (
-                  <Card
-                    sx={{
-                      height: 120,
-                      width: 100,
-                      margin: "auto",
-                      marginTop: "1em",
-                      marginBottom: "1em",
-                      borderRadius: 2,
-                      ":hover": {
-                        boxShadow: 20,
-                      },
-                      overflowY: "auto",
-                    }}
-                    elevation={6}
-                  >
-                    <Typography paddingLeft={"2em"}>
-                      {trip.class_name}
-                    </Typography>
-                    <Box display={"flex"}>
-                      <Avatar
-                        alt="Remy Sharp"
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5rVCgCOyjtMtewSxrwg3pskhj6jFrGqqE51C9RdqdgC4yGhsC6J6uJE3_6CJsr86wZXo&usqp=CAU"
-                      />
-                      <Typography fontSize={"1.5rem"}>{trip.fare}</Typography>
-                    </Box>
-                    {!token ? (
-                      <>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => {
-                            navigate("/LOGIN");
-                          }}
-                        >
-                          book now
-                        </Button>
-                      </>
-                    ) : (
+
+                <Card
+                  sx={{
+                    height: 120,
+                    width: 100,
+                    margin: "auto",
+                    marginTop: "1em",
+                    marginBottom: "1em",
+                    borderRadius: 2,
+                    ":hover": {
+                      boxShadow: 20,
+                    },
+                    overflowY: "auto",
+                  }}
+                  elevation={6}
+                >
+                  <Typography paddingLeft={"2em"}>{trip.class_name}</Typography>
+                  <Box display={"flex"}>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5rVCgCOyjtMtewSxrwg3pskhj6jFrGqqE51C9RdqdgC4yGhsC6J6uJE3_6CJsr86wZXo&usqp=CAU"
+                    />
+                    <Typography fontSize={"1.5rem"}>{trip.fare}</Typography>
+                  </Box>
+                  {!token ? (
+                    <>
                       <Button
                         variant="outlined"
                         size="small"
                         onClick={() => {
+                          navigate("/LOGIN");
+                        }}
+                      >
+                        book now
+                      </Button>
+                    </>
+                  ) : (
+                    <Tooltip title="Click twice">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={() => {
+                          setTripID(trip.trip_id);
+                          setClassID(trip.seat_class_id);
                           showBogeys();
                         }}
                       >
                         book now
                       </Button>
-                    )}
-                  </Card>
-                ) : (
-                  <></>
-                )}
+                    </Tooltip>
+                  )}
+                </Card>
               </Card>
               {bogeys.length > 0 ? (
                 <>
-                  <TextField
-                    id="outlined-select-bogey"
-                    select
-                    label="Select your bogey"
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      setBogeyName(event.target.value);
-                    }}
-                    value={bogey_name}
-                    helperText="Please select your bogey"
-                    sx={{ margin: "1.5em 8em" }}
-                  >
-                    {bogeys.map((bogey: showBogeysType) => (
-                      <MenuItem
-                        key={bogey.bogey_name}
-                        value={bogey.bogey_name}
-                        onClick={showSeats}
-                      >
-                        {bogey.bogey_name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  <Tooltip title="select twice">
+                    <TextField
+                      id="outlined-select-bogey"
+                      select
+                      label="Select your bogey"
+                      onChange={(
+                        event: React.ChangeEvent<HTMLInputElement>
+                      ) => {
+                        setBogeyName(event.target.value);
+                      }}
+                      value={bogey_name}
+                      helperText="Please select your bogey"
+                      sx={{ margin: "1.5em 8em" }}
+                    >
+                      {bogeys.map((bogey: showBogeysType) => (
+                        <MenuItem
+                          key={bogey.bogey_name}
+                          value={bogey.bogey_name}
+                          onClick={() => {
+                            setBogeyID(bogey.bogey_id);
+                            showSeats();
+                          }}
+                        >
+                          {bogey.bogey_name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Tooltip>
                 </>
               ) : (
                 <></>

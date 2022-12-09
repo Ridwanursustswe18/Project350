@@ -4,6 +4,7 @@ import Cancel from "./components/cancel";
 import { Home } from "./components/Home";
 import Login from "./components/login";
 import Header from "./components/nav";
+import PreviewTicket from "./components/previewTicket";
 import Profile from "./components/profile";
 import ShowSelectedSeats from "./components/showSelectedSeats";
 import Success from "./components/success";
@@ -37,7 +38,7 @@ function App() {
               path="/showSelectedSeats"
               element={<ShowSelectedSeats />}
             ></Route>
-
+            <Route path="/previewTicket" element={<PreviewTicket />}></Route>
             <Route path="/success" element={<Success />}></Route>
             <Route path="/failure" element={<Cancel />}></Route>
             <Route path="/TRAIN_INFORMATION"></Route>

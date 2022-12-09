@@ -1,5 +1,6 @@
 import { Box, Button, Typography } from "@mui/material";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import authHeader from "../services/auth";
 
 const Success = () => {
@@ -15,7 +16,20 @@ const Success = () => {
   const trip_id = localStorage.getItem("trip_id");
   const passenger_id = localStorage.getItem("ID");
   const total_fare = localStorage.getItem("total_fare");
-  console.log(total_fare);
+  const navigate = useNavigate();
+  const redirect = async () => {
+    const today = new Date();
+    const issue_date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
+    const issue_time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    console.log(issue_date, issue_time);
+    navigate("/previewTicket", { state: { issue_date, issue_time } });
+  };
 
   const changeStatus = async () => {
     for (let i = 0; i < selectedSeats?.length; i++) {
@@ -53,9 +67,12 @@ const Success = () => {
       <Typography variant="h2">success</Typography>
       <Button
         size="large"
+        variant="outlined"
+        sx={{ margin: "1.5em 0em" }}
         onClick={() => {
           changeStatus();
           createTicket();
+          redirect();
         }}
       >
         proceed

@@ -37,7 +37,7 @@ database.query(query1,[user.ID],(err,results)=>{
 }
 
 exports.showSeats = async(req,res)=>{
-    const bogey_name = req.query.bogey_name
+    const bogey_id = req.query.bogey_id
 
     const user = req.user
     let query1 = "SELECT * FROM `passenger` WHERE passenger_id = ?"
@@ -45,8 +45,8 @@ exports.showSeats = async(req,res)=>{
      
         if(results && results[0].passenger_id === user.ID ){
             
-        let query2 = "SELECT * from seat,bogey,seat_statuses WHERE seat.seat_id=seat_statuses.seat_id and seat.bogey_id = bogey.bogey_id  and bogey.bogey_name = ?;"
-        database.query(query2,[bogey_name],(err,results)=>{
+        let query2 = "SELECT * from seat,bogey,seat_statuses WHERE seat.seat_id=seat_statuses.seat_id and seat.bogey_id = bogey.bogey_id  and bogey.bogey_id = ?;"
+        database.query(query2,[bogey_id],(err,results)=>{
             if(!err){
                 return res.status(200).json(results)
             }

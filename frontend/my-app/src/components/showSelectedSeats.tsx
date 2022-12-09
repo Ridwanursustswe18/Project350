@@ -39,6 +39,8 @@ const ShowSelectedSeats = () => {
   );
   const tripID = localStorage.setItem("trip_id", trip_id);
   localStorage.setItem("total_fare", totalFare);
+  localStorage.setItem("class_name", class_name);
+  localStorage.setItem("fare", fare);
   const handleCheckout = () => {
     axios
       .post(
